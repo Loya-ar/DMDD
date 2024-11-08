@@ -33,6 +33,13 @@ BEGIN
         EXECUTE IMMEDIATE 'GRANT CREATE ANY CONTEXT TO APP_ADMIN';
         EXECUTE IMMEDIATE 'GRANT CREATE PROCEDURE TO APP_ADMIN';
 
+        -- Grant view permissions
+        EXECUTE IMMEDIATE 'GRANT SELECT ON Current_Inventory_Status TO APP_ADMIN';
+        EXECUTE IMMEDIATE 'GRANT SELECT ON Total_Sales_Region TO APP_ADMIN';
+        EXECUTE IMMEDIATE 'GRANT SELECT ON Influencer_Sales_Performance TO APP_ADMIN';
+        EXECUTE IMMEDIATE 'GRANT SELECT ON Customer_Purchase_Behavior TO APP_ADMIN';
+        EXECUTE IMMEDIATE 'GRANT SELECT ON Order_Fulfillment_Status TO APP_ADMIN';
+
         DBMS_OUTPUT.PUT_LINE('User APP_ADMIN created and granted the specified privileges successfully.');
     ELSE
         DBMS_OUTPUT.PUT_LINE('User APP_ADMIN already exists.');
