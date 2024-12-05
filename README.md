@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project automates an e-commerce system by implementing a robust database solution that adheres to key business rules. It supports user management, inventory management, order placement, and reporting, showcasing a wide range of datab functionalities.
+This project automates an e-commerce system by implementing a robust database solution that adheres to key business rules. It supports user management, inventory management, order placement, and reporting, showcasing a wide range of database functionalities.
 
 ## Features
 
