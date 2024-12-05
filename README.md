@@ -1,72 +1,131 @@
-# Project Overview
+# Database Management Project
 
-This project sets up an inventory and order management database with various tables, views, and user roles, each with specific permissions. The goal is to allow different types of users to interact with the database based on their roles—some users will manage inventory, others will track influencer sales performance, and so on. Here’s a clear breakdown of each step involved to make this setup as smooth as possible.
+## Overview
 
-## Step-by-Step Setup
+This project automates an e-commerce system by implementing a robust database solution that adheres to key business rules. It supports user management, inventory management, order placement, and reporting, showcasing a wide range of database functionalities.
 
-### Step 1: Start with the APP_ADMIN User
+## Features
 
-The setup begins with the System DBA (Database Administrator) creating an admin user called `APP_ADMIN`. This user, `APP_ADMIN`, will be in charge of setting up the rest of the database and managing other users, tables, and views.
+1. **User Management**  
+   - Users can place orders.  
+   - Influencers can promote products.
 
-- Log in as System DBA and create the `APP_ADMIN` user.
-- Grant `APP_ADMIN` the necessary permissions to manage tables, views, and users.
-  - This includes permissions for creating tables, views, managing user permissions, and handling general database operations.
+2. **Inventory Management**  
+   - Admin and Inventory Managers can update product details and stock levels.
 
-By setting up `APP_ADMIN` first, we’re creating a "superuser" who will oversee the setup and manage access for other users in the system.
+3. **Order Management**  
+   - Orders are validated for stock availability before placement.  
+   - Order statuses are tracked and updated.
 
-### Step 2: Create the Database Tables (DDL Script)
+4. **Reporting**  
+   - Dynamic views provide insights into sales, inventory, and influencer performance.
 
-Once `APP_ADMIN` is set up, log in as `APP_ADMIN` to start creating the tables required for the project. These tables include `Users`, `Orders`, `Order_Details`, `Products`, and `Influencers`.
+5. **Error Handling**  
+   - Extensive validations ensure business rules are met.
 
-- Run the DDL script for each table, which will define the structure of each table in the database.
-- The script will ensure that, if a table already exists, it will be dropped before being recreated. This approach prevents errors from multiple runs and allows you to re-run the setup as needed.
+---
 
-These tables are the foundation of the database, holding the data on users, orders, products, and influencers. Each table also includes primary keys and foreign keys to maintain relationships and data integrity across the database.
+## Project Components
 
-### Step 3: Add Sample Data to the Tables (DML Script)
+1. **Tables**  
+   - `Tables.sql`: Defines tables for users, products, influencers, orders, and order details.  
+   - **Sample Data**: Includes 10 sample users, influencers, and products, along with simulated transactions.
 
-With the tables set up, the next step is to populate them with some sample data. This will make it easier to test the views and permissions later on.
+2. **Roles**  
+   - `Users.sql`: Creates roles with specific access levels:  
+     - `APP_ADMIN`: Full access to all objects and management capabilities.  
+     - `INVENTORY_MANAGER`: Can update products and manage stock levels.  
+     - `INFLUENCER_USER`: Read-only access to products and sales data.  
+     - `APP_USER`: Access to place orders.
 
-- Run the DML script to insert data into each table. This script adds a few rows to each table—enough to provide meaningful data for testing the views and permissions.
-- Make sure to commit the data once it’s been added, so it’s saved in the database and available for testing.
+3. **Views**  
+   - `Views.sql`: Defines views for reporting:  
+     - `Current_Inventory_Status`: Tracks stock levels.  
+     - `Total_Sales_Region`: Summarizes sales by region.  
+     - `Customer_Purchase_Behavior`: Tracks customer orders and spending.
 
-Adding sample data now will allow us to see real results in the views and validate that each user role only has access to the data they’re supposed to see.
+4. **Procedures and Functions**  
+   - `Procedures.sql`:  
+     - `place_order`: Places a validated order.  
+     - `upsert_user_details`: Adds or updates user information.  
+   - `Functions.sql`:  
+     - `calculate_order_total`: Computes the total order cost.
 
-### Step 4: Create Views for Summarized Data
+5. **Triggers**  
+   - `Triggers.sql`:  
+     - `Update_Inventory_After_Order`: Adjusts inventory after an order.  
+     - `Prevent_Out_Of_Stock_Order`: Prevents ordering out-of-stock products.
 
-With tables and data in place, the next step is to create views, which provide summarized data from the tables. These views will make it easy for different user roles to access relevant information, like inventory levels, regional sales data, influencer performance, and customer purchase histories.
+6. **Reports**  
+   - `Reports.sql`: Provides insights such as:  
+     - Top customers by orders.  
+     - Sales performance by influencer.  
+     - Inventory status and low stock alerts.
 
-- Run the view creation script for each view. Each view is created using a "replace if exists" approach to allow for multiple runs.
-- Key views include:
-  - **Current Inventory Status**: Shows product stock levels.
-  - **Total Sales by Region**: Summarizes sales data by geographical region.
-  - **Influencer Sales Performance**: Tracks revenue generated by each influencer.
-  - **Customer Purchase Behavior**: Summarizes purchase history for each customer.
-  - **Order Fulfillment Status**: Provides the status of each order.
+---
 
-Each view is tailored to a specific need, making it easy for users to retrieve the insights they need without direct access to the raw data.
+## Execution Steps
 
-### Step 5: Set Up Users and Assign Permissions
+### Pre-requisites
+1. Oracle Database (version 12c or higher).  
+2. SQL Client (e.g., SQL Developer or command-line interface).  
+3. Access credentials for admin.
 
-With views ready, set up specific users and assign them appropriate permissions. Each user will have access to specific views and tables based on their role in the system.
+### Steps
+1. **Create Users and Roles**  
+   - Execute `Users.sql` to create roles.  
+   - Assign grants using `Grants.sql`.
 
-1. Create each user with a defined role:
-   - **APP_ADMIN**: The superuser with full access to all tables and views.
-   - **INVENTORY_MANAGER**: Has access to inventory and order-related data, allowing them to manage product stock levels and check order statuses.
-   - **INFLUENCER_USER**: Has access to influencer-related data, including product and sales information.
-   - **APP_USER**: The end-user, who can place orders and view their purchase history.
-2. Grant specific view access to each user. For example:
-   - **INVENTORY_MANAGER** can access views related to inventory management.
-   - **INFLUENCER_USER** can access views that track influencer performance and product details.
-   - **APP_USER** can view their own purchasing history and order statuses.
+2. **Create Database Objects**  
+   - Run `Tables.sql` to create tables and sequences.
 
-By assigning these roles and permissions, we’re implementing role-based access control. This means each user can only access the data relevant to their role, helping maintain security and data privacy within the system.
+3. **Insert Sample Data**  
+   - Populate tables with initial data.
 
-### Step 6: Validate Each User’s Permissions
+4. **Create Views**  
+   - Execute `Views.sql` to create dynamic reports.
 
-After setting up users and permissions, log in as each user to confirm they have access only to their relevant data.
+5. **Compile and Execute Procedures and Functions**  
+   - Run `Procedures.sql` and `Functions.sql`.  
+   - Validate using test scripts.
 
-1. Log in as `APP_ADMIN` and verify that all views and tables are accessible, as `APP_ADMIN` has full access.
-2. Log in as `INVENTORY_MANAGER` and confirm they can only access inventory views and order-related tables.
-3. Log in as `INFLUENCER_USER` and check that they have access to influencer-specific views but cannot access other restricted data.
-4. Log in as `APP_USER` and ensure they can only view their order and purchase history, with no access to unrelated data.
+6. **Create Triggers**  
+   - Execute `Triggers.sql`.  
+   - Test triggers with sample operations.
+
+7. **Run Reports**  
+   - Execute `Reports.sql` to generate insights.
+
+---
+
+## Error Handling
+
+1. **ORA-01031 (Insufficient Privileges)**  
+   - Ensure roles and grants are correctly assigned.
+
+2. **ORA-00001 (Unique Constraint Violated)**  
+   - Check for duplicate data during `INSERT` operations.
+
+---
+
+## Conclusion
+
+This project demonstrates end-to-end database management with role-based access control, comprehensive error handling, and robust reporting capabilities. The implementation adheres to real-world business rules, ensuring seamless database functionality.
+
+---
+
+## Team Members
+
+- **Anurag Gher**  
+  NUID: 002845719  
+  Email: gher.a@northeastern.edu  
+
+- **Arjun Loya**  
+  NUID: 002318612  
+  Email: loya.a@northeastern.edu  
+
+- **Lokesh Thodkar**  
+  NUID: 002088709  
+  Email: thodkar.l@northeastern.edu  
+
+---
