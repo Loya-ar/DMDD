@@ -1,7 +1,7 @@
 CREATE OR REPLACE PACKAGE project_mgmt AS
 
   -- Procedure to place an order
-  PROCEDURE place_orde(
+  PROCEDURE place_order(
     p_user_email IN VARCHAR2,
     p_product_id IN NUMBER,
     p_quantity IN NUMBER,
