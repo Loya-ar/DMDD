@@ -5,23 +5,21 @@ CREATE OR REPLACE PACKAGE project_mgmt AS
     p_user_email IN VARCHAR2,
     p_product_id IN NUMBER,
     p_quantity IN NUMBER,
+    p_influencer_id IN NUMBER,
     o_order_id OUT NUMBER
   );
 
-  -- Procedure to upsert user details
-  PROCEDURE upsert_user_details(
-    p_user_first_name IN VARCHAR2,
-    p_user_last_name IN VARCHAR2,
-    p_user_email IN VARCHAR2,
-    p_user_location IN VARCHAR2
+  -- Procedure to upsert product inventory
+  PROCEDURE update_product_inventory(
+    p_product_id IN NUMBER,
+    p_quantity_change IN NUMBER
   );
 
-  -- Function to calculate total order amount
-  FUNCTION calculate_order_total(
-    f_order_id IN NUMBER,
-    f_tax IN NUMBER,
-    f_delivery_charge IN NUMBER
-  ) RETURN NUMBER;
+  -- Procedure to update order status
+  PROCEDURE update_order_status(
+    p_order_id IN NUMBER,
+    p_new_status IN VARCHAR2
+  );
 
 END project_mgmt;
 /
@@ -33,6 +31,7 @@ CREATE OR REPLACE PACKAGE BODY project_mgmt AS
     p_user_email IN VARCHAR2,
     p_product_id IN NUMBER,
     p_quantity IN NUMBER,
+    p_influencer_id IN NUMBER,
     o_order_id OUT NUMBER
   ) IS
     v_user_id NUMBER;
@@ -75,54 +74,32 @@ CREATE OR REPLACE PACKAGE BODY project_mgmt AS
     DBMS_OUTPUT.PUT_LINE('Order placed successfully. Order ID: ' || o_order_id);
   END;
 
-  -- Procedure to upsert user details
-  PROCEDURE upsert_user_details(
-    p_user_first_name IN VARCHAR2,
-    p_user_last_name IN VARCHAR2,
-    p_user_email IN VARCHAR2,
-    p_user_location IN VARCHAR2
+  -- Procedure to update product inventory
+  PROCEDURE update_product_inventory(
+    p_product_id IN NUMBER,
+    p_quantity_change IN NUMBER
   ) IS
-    v_user_id NUMBER;
-    v_user_exists NUMBER;
   BEGIN
-    -- Check if the user already exists
-    SELECT COUNT(*) INTO v_user_exists 
-    FROM Users 
-    WHERE Email = p_user_email;
+    -- Update the product inventory
+    UPDATE Products
+    SET Quantity_in_hand = Quantity_in_hand + p_quantity_change
+    WHERE Product_id = p_product_id;
 
-    IF v_user_exists > 0 THEN
-      -- If the user exists, update their details
-      UPDATE Users
-      SET First_Name = p_user_first_name,
-          Last_Name = p_user_last_name,
-          Location = p_user_location
-      WHERE Email = p_user_email;
-
-      DBMS_OUTPUT.PUT_LINE('User details updated successfully.');
-    ELSE
-      -- If the user does not exist, insert a new record
-      INSERT INTO Users (First_Name, Last_Name, Email, Location)
-      VALUES (p_user_first_name, p_user_last_name, p_user_email, p_user_location);
-
-      DBMS_OUTPUT.PUT_LINE('New user added successfully.');
-    END IF;
+    DBMS_OUTPUT.PUT_LINE('Product inventory updated successfully.');
   END;
 
-  -- Function to calculate total order amount
-  FUNCTION calculate_order_total(
-    f_order_id IN NUMBER,
-    f_tax IN NUMBER,
-    f_delivery_charge IN NUMBER
-  ) RETURN NUMBER IS
-    v_total_price NUMBER;
+  -- Procedure to update order status
+  PROCEDURE update_order_status(
+    p_order_id IN NUMBER,
+    p_new_status IN VARCHAR2
+  ) IS
   BEGIN
-    -- Calculate the total cost of all products in the order
-    SELECT SUM(Quantity * Price_Per_Unit) INTO v_total_price
-    FROM Order_Details
-    WHERE Order_id = f_order_id;
+    -- Update the status of the order
+    UPDATE Orders
+    SET Order_Status = p_new_status
+    WHERE Order_id = p_order_id;
 
-    -- Add tax and delivery charges to the total price
-    RETURN v_total_price + f_tax + f_delivery_charge;
+    DBMS_OUTPUT.PUT_LINE('Order status updated successfully.');
   END;
 
 END project_mgmt;
